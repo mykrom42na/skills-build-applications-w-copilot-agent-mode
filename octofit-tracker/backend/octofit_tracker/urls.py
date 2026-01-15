@@ -20,6 +20,7 @@ from rest_framework.routers import DefaultRouter
 from octofit_tracker import views
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+import os
 
 router = DefaultRouter()
 router.register(r'users', views.UserViewSet)
@@ -30,12 +31,18 @@ router.register(r'leaderboard', views.LeaderboardEntryViewSet)
 
 @api_view(['GET'])
 def api_root(request, format=None):
+    codespace_name = os.getenv('CODESPACE_NAME')
+    if codespace_name:
+        base_url = f'https://{codespace_name}-8000.app.github.dev'
+    else:
+        base_url = 'http://localhost:8000'
+    
     return Response({
-        'users': request.build_absolute_uri('api/users/'),
-        'teams': request.build_absolute_uri('api/teams/'),
-        'activities': request.build_absolute_uri('api/activities/'),
-        'workouts': request.build_absolute_uri('api/workouts/'),
-        'leaderboard': request.build_absolute_uri('api/leaderboard/'),
+        'users': f'{base_url}/api/users/',
+        'teams': f'{base_url}/api/teams/',
+        'activities': f'{base_url}/api/activities/',
+        'workouts': f'{base_url}/api/workouts/',
+        'leaderboard': f'{base_url}/api/leaderboard/',
     })
 
 urlpatterns = [
